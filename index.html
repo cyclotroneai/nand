@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facility Compliance Register</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bg:#0b121b;--panel:#111b27;--line:#22303f;--tx:#e8eef5;--mu:#8497ab;--ac:#4fc3cf;--exp:#f43f5e;--crit:#fb7185;--warn:#f59e0b;--attn:#facc15;--ok:#34d399;--sh:#16222f}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f1f5f9;--panel:#fff;--line:#d9e2ec;--tx:#14202c;--mu:#5b6b7b;--ac:#0e8b97;--sh:#eef3f8}}
+:root[data-theme="light"]{--bg:#f1f5f9;--panel:#fff;--line:#d9e2ec;--tx:#14202c;--mu:#5b6b7b;--ac:#0e8b97;--sh:#eef3f8}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px));overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.hd{max-width:1180px;margin:0 auto;padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:17px;margin:0;line-height:1.2}.sub{font-size:12px;color:var(--mu)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tools label.f{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:6px}
+input[type=date],input[type=search],select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:0 10px;min-height:44px}
+.btn{min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;display:inline-flex;align-items:center;font-weight:600}
+.btn:hover{background:var(--sh)}
+nav{display:flex;gap:6px}
+nav button{background:none;border:0;border-radius:8px;padding:0 14px;min-height:44px;color:var(--mu);cursor:pointer;display:flex;align-items:center;gap:6px}
+nav button.on{background:var(--sh);color:var(--ac);font-weight:600}
+@media (max-width:760px){
+ nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));justify-content:space-around}
+ nav button{flex:1;flex-direction:column;gap:2px;font-size:12px;padding:0 4px;min-height:48px;justify-content:center}
+}
+main{max-width:1180px;margin:0 auto;padding:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:560px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:980px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.k{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left}
+.k b{font-size:26px;display:block;line-height:1.1}.k span{display:block}.k small{color:var(--mu)}
+.grid{display:grid;gap:12px;margin-top:12px;grid-template-columns:1fr}
+@media (min-width:900px){.grid{grid-template-columns:1.25fr 1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+h2{font-size:15px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;padding-left:2px}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--sh)}
+td.z{color:var(--mu);opacity:.6}tfoot td{font-weight:700;border:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;background:var(--c)}
+.note{font-size:12px;color:var(--mu);margin:8px 0 0}
+.mix{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center}
+.mix svg{width:min(190px,60vw);height:auto}
+.lg{display:grid;gap:8px;font-size:14px}.lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:8px;background:var(--c)}.lg small{color:var(--mu)}
+.br{display:grid;grid-template-columns:minmax(80px,120px) 1fr 28px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
+.br .t{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--sh)}.br .t u{background:var(--c)}.br em{font-style:normal;font-weight:700;text-align:right}
+.mo{display:flex;align-items:flex-end;gap:4px;height:190px}
+.mo div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--mu);min-width:0}
+.mo u{display:block;width:100%;background:var(--ac);border-radius:3px 3px 0 0;min-height:2px;margin:2px 0}.mo b{color:var(--tx);font-size:12px}
+.fl{display:grid;gap:8px;grid-template-columns:1fr;margin-bottom:12px}
+@media (min-width:640px){.fl{grid-template-columns:2fr 1fr 1fr}}
+.row{display:grid;gap:4px 12px;padding:12px 4px;border-bottom:1px solid var(--line);grid-template-columns:1fr auto}
+@media (min-width:760px){.row{grid-template-columns:1.3fr 1.2fr 1fr 130px;align-items:center}}
+.row .m{color:var(--mu);font-size:13px}
+.pill{justify-self:start;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:600;color:#10161d;background:var(--c)}
+.fg{display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:700px){.fg{grid-template-columns:1fr 1fr}}@media (min-width:1000px){.fg{grid-template-columns:repeat(3,1fr)}}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+summary{padding:12px 14px;cursor:pointer;min-height:48px;display:flex;justify-content:space-between;gap:8px;align-items:center;list-style:none}
+details .row{margin:0 10px}
+.empty{padding:28px 10px;text-align:center;color:var(--mu)}
+#msg{font-size:13px;color:var(--mu);margin:0 0 10px}
+.v{display:none}.v.on{display:block}
+</style>
+</head>
+<body>
+<header><div class="hd">
+ <div><h1>Facility Compliance Register</h1><div class="sub">SAFCO International</div></div>
+ <nav id="nav"></nav>
+ <div class="tools">
+  <label class="f">As of <input type="date" id="asof"></label>
+  <label class="btn" for="file">Upload Excel</label>
+  <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+ </div>
+</div></header>
+<main>
+ <p id="msg"></p>
+ <section class="v on" id="v-overview"></section>
+ <section class="v" id="v-documents"></section>
+ <section class="v" id="v-facilities"></section>
+ <section class="v" id="v-renewed"></section>
+</main>
+<script>
+const ST=[["exp","Expired","Past expiry","--exp"],["crit","Critical","≤ 30 days","--crit"],["warn","Warning","31–45 days","--warn"],["attn","Attention","46–60 days","--attn"],["ok","Valid","> 60 days","--ok"]];
+const SC=Object.fromEntries(ST.map(s=>[s[0],s]));
+const TABS=[["overview","📊","Overview"],["documents","📄","Documents"],["facilities","🏢","Facilities"],["renewed","✅","Renewed"]];
+const DOCS=["Title Deed","Tenancy Contract","Ejari","Musataha / Lease","Trade License","Insurance"];
+let data=[],asOf=new Date(),tab="overview",flt={q:"",s:"",d:""};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso=d=>d.toISOString().slice(0,10);
+const fmt=d=>d.toLocaleDateString("en-GB");
+const day=d=>Date.UTC(d.getFullYear(),d.getMonth(),d.getDate());
+function status(e){const n=Math.round((day(e)-day(asOf))/864e5);return n<0?"exp":n<=30?"crit":n<=45?"warn":n<=60?"attn":"ok"}
+function days(e){return Math.round((day(e)-day(asOf))/864e5)}
+function sample(){const out=[],cnt=[4,10,19,4,28,5];cnt.forEach((n,k)=>{for(let i=0;i<n;i++){const o=((i*53+k*31)%400)-8;const e=new Date(asOf);e.setDate(e.getDate()+o);out.push({f:"Facility "+String((i*7+k*3)%28+1).padStart(2,"0"),d:DOCS[k],e,r:false})}});return out}
+function load(rows,label){data=rows;try{localStorage.setItem("fcr",JSON.stringify({label,rows:rows.map(r=>({f:r.f,d:r.d,e:r.e.toISOString(),r:r.r}))}))}catch(x){}
+ $("msg").textContent=label;render()}
+function restore(){try{const s=JSON.parse(localStorage.getItem("fcr"));if(s&&s.rows.length){data=s.rows.map(r=>({...r,e:new Date(r.e)}));$("msg").textContent=s.label;return}}catch(x){}
+ data=sample();$("msg").textContent="Showing sample data. Tap Upload Excel to load your register."}
+function toDate(v){if(v instanceof Date)return isNaN(v)?null:v;if(typeof v==="number"){const p=XLSX.SSF.parse_date_code(v);return p?new Date(p.y,p.m-1,p.d):null}
+ if(typeof v==="string"&&v.trim()){const m=v.trim().match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);const d=m?new Date(+m[3],+m[2]-1,+m[1]):new Date(v);return isNaN(d)?null:d}return null}
+function parse(wb){const rows=[];wb.SheetNames.forEach(n=>{const js=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:"",raw:true});if(!js.length)return;
+ const keys=Object.keys(js[0]);const pick=re=>keys.find(k=>re.test(k.trim().toLowerCase()));
+ const kf=pick(/facilit|site|branch|location|property/),kd=pick(/^(document|doc|type)|document type/),ke=pick(/expir|valid until|end date|due/),kr=pick(/renew/);
+ if(!kf||!kd||!ke)return;
+ js.forEach(r=>{const e=toDate(r[ke]);if(!e||!r[kf]||!r[kd])return;const rv=kr?String(r[kr]).trim().toLowerCase():"";rows.push({f:String(r[kf]).trim(),d:String(r[kd]).trim(),e,r:["yes","y","true","1","renewed","done"].includes(rv)})})});return rows}
+$("file").addEventListener("change",async ev=>{const f=ev.target.files[0];if(!f)return;
+ try{const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});const rows=parse(wb);
+  if(!rows.length){$("msg").textContent="No usable rows found. Your sheet needs columns for Facility, Document and Expiry Date.";return}
+  load(rows,"Loaded "+rows.length+" documents from "+f.name)}catch(x){$("msg").textContent="Could not read that file. Please upload an .xlsx, .xls or .csv file."}
+ ev.target.value=""});
+$("asof").addEventListener("change",e=>{if(e.target.value){asOf=new Date(e.target.value+"T00:00:00");render()}});
+function active(){return data.filter(r=>!r.r)}
+function counts(list){const c={exp:0,crit:0,warn:0,attn:0,ok:0};list.forEach(r=>c[status(r.e)]++);return c}
+function overview(){const a=active(),c=counts(a),fac=new Set(data.map(r=>r.f)).size;
+ let h='<div class="kpis"><button class="k" style="--c:var(--ac)" data-go="documents"><b>'+fac+'</b><span>Facilities</span><small>'+data.length+' dated documents</small></button>';
+ ST.forEach(s=>h+='<button class="k" style="--c:var('+s[3]+')" data-go="documents" data-s="'+s[0]+'"><b>'+c[s[0]]+'</b><span>'+s[1]+'</span><small>'+s[2]+'</small></button>');
+ h+='</div><div class="grid"><div class="card"><h2>Expiry summary by document</h2><table><thead><tr><th>Document</th>'+ST.map(s=>'<th><span class="dot" style="--c:var('+s[3]+')"></span>'+s[1].slice(0,4)+'</th>').join("")+'</tr></thead><tbody>';
+ const types=[...new Set(a.map(r=>r.d))];
+ types.forEach(t=>{const cc=counts(a.filter(r=>r.d===t));h+='<tr data-go="documents" data-d="'+esc(t)+'"><td>'+esc(t)+'</td>'+ST.map(s=>'<td class="'+(cc[s[0]]?"":"z")+'">'+cc[s[0]]+'</td>').join("")+'</tr>'});
+ h+='</tbody><tfoot><tr><td>Total</td>'+ST.map(s=>'<td>'+c[s[0]]+'</td>').join("")+'</tr></tfoot></table><p class="note">Critical ≤30 days · Warning 31–45 · Attention 46–60 · Valid &gt;60. Tap a row to see its documents.</p></div>';
+ const tot=a.length||1;let off=0;const R=40,C=2*Math.PI*R;
+ let arcs=ST.map(s=>{const l=c[s[0]]/tot*C,x='<circle r="'+R+'" cx="60" cy="60" fill="none" stroke="var('+s[3]+')" stroke-width="16" stroke-dasharray="'+l+' '+(C-l)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 60 60)"/>';off+=l;return x}).join("");
+ h+='<div class="card"><h2>Status mix</h2><div class="mix"><svg viewBox="0 0 120 120">'+arcs+'<text x="60" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="var(--tx)">'+a.length+'</text></svg><div class="lg">'+ST.map(s=>'<div><i style="--c:var('+s[3]+')"></i><b>'+c[s[0]]+'</b> '+s[1]+' <small>'+s[2]+'</small></div>').join("")+'</div></div></div></div>';
+ h+='<div class="grid"><div class="card"><h2>Status by document type</h2>'+types.map(t=>{const L=a.filter(r=>r.d===t),cc=counts(L);return '<div class="br"><span>'+esc(t)+'</span><div class="t">'+ST.map(s=>'<u style="--c:var('+s[3]+');width:'+cc[s[0]]/L.length*100+'%"></u>').join("")+'</div><em>'+L.length+'</em></div>'}).join("")+'</div>';
+ const ms=[];for(let i=0;i<12;i++){const d=new Date(asOf.getFullYear(),asOf.getMonth()+i,1);ms.push({l:d.toLocaleString("en",{month:"short"}),y:d.getFullYear(),m:d.getMonth(),n:0})}
+ a.forEach(r=>ms.forEach(m=>{if(r.e.getFullYear()===m.y&&r.e.getMonth()===m.m)m.n++}));const mx=Math.max(1,...ms.map(m=>m.n));
+ h+='<div class="card"><h2>Expiries in the next 12 months</h2><div class="mo">'+ms.map(m=>'<div><b>'+m.n+'</b><u style="height:'+m.n/mx*130+'px"></u>'+m.l+'</div>').join("")+'</div></div></div>';
+ $("v-overview").innerHTML=h}
+function docs(){const el=$("v-documents");
+ if(!el.firstChild){el.innerHTML='<div class="fl"><input type="search" id="q" placeholder="Search facility or document"><select id="fs"><option value="">All statuses</option>'+ST.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join("")+'</select><select id="fd"></select></div><div class="card" id="dl"></div>';
+  $("q").oninput=e=>{flt.q=e.target.value;docs()};$("fs").onchange=e=>{flt.s=e.target.value;docs()};$("fd").onchange=e=>{flt.d=e.target.value;docs()}}
+ const types=[...new Set(active().map(r=>r.d))];$("fd").innerHTML='<option value="">All documents</option>'+types.map(t=>'<option'+(t===flt.d?" selected":"")+'>'+esc(t)+'</option>').join("");
+ $("fs").value=flt.s;$("q").value=flt.q;
+ const q=flt.q.toLowerCase(),L=active().filter(r=>(!flt.s||status(r.e)===flt.s)&&(!flt.d||r.d===flt.d)&&(!q||(r.f+r.d).toLowerCase().includes(q))).sort((a,b)=>a.e-b.e);
+ $("dl").innerHTML=L.length?L.map(rowH).join(""):'<div class="empty">No documents match these filters.</div>'}
+function rowH(r){const s=status(r.e),n=days(r.e);return '<div class="row"><b>'+esc(r.f)+'</b><span class="m">'+esc(r.d)+'</span><span class="m">'+fmt(r.e)+' · '+(n<0?-n+" days ago":n+" days left")+'</span><span class="pill" style="--c:var('+SC[s][3]+')">'+SC[s][1]+'</span></div>'}
+function facs(){const by={};data.forEach(r=>(by[r.f]=by[r.f]||[]).push(r));
+ $("v-facilities").innerHTML='<div class="fg">'+Object.keys(by).sort().map(f=>{const L=by[f].filter(r=>!r.r),c=counts(L);return '<details><summary><b>'+esc(f)+'</b><span>'+ST.filter(s=>c[s[0]]).map(s=>'<span class="pill" style="--c:var('+s[3]+')">'+c[s[0]]+'</span>').join(" ")+'</span></summary>'+L.sort((a,b)=>a.e-b.e).map(rowH).join("")+'</details>'}).join("")+'</div>'}
+function renewed(){const L=data.filter(r=>r.r);$("v-renewed").innerHTML='<div class="card"><h2>Renewed documents</h2>'+(L.length?L.map(rowH).join(""):'<div class="empty">Nothing marked as renewed. Add a “Renewed” column (Yes/No) to your sheet to track these.</div>')+'</div>'}
+function render(){$("asof").value=iso(asOf);
+ $("nav").innerHTML=TABS.map(t=>'<button data-t="'+t[0]+'" class="'+(t[0]===tab?"on":"")+'"><span>'+t[1]+'</span>'+t[2]+'</button>').join("");
+ TABS.forEach(t=>$("v-"+t[0]).classList.toggle("on",t[0]===tab));
+ ({overview,documents:docs,facilities:facs,renewed})[tab]()}
+document.addEventListener("click",e=>{const n=e.target.closest("[data-t]");if(n){tab=n.dataset.t;render();scrollTo(0,0);return}
+ const g=e.target.closest("[data-go]");if(g){flt={q:"",s:g.dataset.s||"",d:g.dataset.d||""};tab=g.dataset.go;render();scrollTo(0,0)}});
+asOf=new Date();restore();render();
+</script>
+</body>
+</html>
